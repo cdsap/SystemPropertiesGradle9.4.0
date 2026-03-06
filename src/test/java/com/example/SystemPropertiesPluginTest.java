@@ -61,20 +61,21 @@ class SystemPropertiesPluginTest {
                 }
                 """);
 
-        BuildResult result = GradleRunner.create()
+        BuildResult firstBuild = GradleRunner.create()
             .withProjectDir(projectDir)
             .withPluginClasspath()
             .withArguments("foo", "--configuration-cache")
             .withGradleVersion(gradleVersion)
             .build();
-        assertTrue(result.getOutput().contains("Configuration cache entry stored."));
-
-        BuildResult result2 = GradleRunner.create()
+        assertTrue(firstBuild.getOutput().contains("Configuration cache entry stored."));
+        System.out.println(gradleVersion + "-First build output:\n" + firstBuild.getOutput());
+        BuildResult secondBuild = GradleRunner.create()
             .withProjectDir(projectDir)
             .withPluginClasspath()
             .withArguments("foo", "--configuration-cache")
             .withGradleVersion(gradleVersion)
             .build();
-        assertTrue(result2.getOutput().contains("Configuration cache entry reused."));
+        System.out.println(gradleVersion + "-Second build output:\n" + secondBuild.getOutput());
+        assertTrue(secondBuild.getOutput().contains("Configuration cache entry reused."));
     }
 }
