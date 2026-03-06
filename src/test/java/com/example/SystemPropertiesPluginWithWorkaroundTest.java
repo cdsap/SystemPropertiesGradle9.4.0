@@ -15,11 +15,37 @@ import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SystemPropertiesPluginTest {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class SystemPropertiesPluginWithWorkaroundTest {
 
     @TempDir
     File projectDir;
 
+    @Order(1)
+    @ParameterizedTest
+    @ValueSource(strings = {"9.3.0", "9.3.1", "9.4.0"})
+    void initFile(String gradleVersion) throws IOException {
+        Files.writeString(new File(projectDir, "settings.gradle.kts").toPath(), "");
+        Files.writeString(new File(projectDir, "build.gradle.kts").toPath(),
+            """
+                plugins {
+                    id("com.example.system-properties")
+                }
+                repositories {
+                    mavenCentral()
+                }
+                """);
+
+        GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withPluginClasspath()
+            .withArguments("help", "--configuration-cache")
+            .withGradleVersion(gradleVersion)
+            .build();
+
+    }
+
+    @Order(2)
     @ParameterizedTest
     @ValueSource(strings = {"9.3.0", "9.3.1", "9.4.0"})
     void showSystemPropertiesTaskPrintsProperties(String gradleVersion) throws IOException {
