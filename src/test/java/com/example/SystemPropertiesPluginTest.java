@@ -31,6 +31,13 @@ class SystemPropertiesPluginTest {
                 }
                 """);
 
+       GradleRunner.create()
+            .withProjectDir(projectDir)
+            .withPluginClasspath()
+            .withArguments("help", "--configuration-cache")
+            .withGradleVersion(gradleVersion)
+            .build();
+
         BuildResult result = GradleRunner.create()
             .withProjectDir(projectDir)
             .withPluginClasspath()
